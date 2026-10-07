@@ -1,0 +1,15 @@
+{
+	"name": "lease-plugin",
+	"version": "0.0.1",
+	"private": true,
+	"devDependencies": {
+		"obsidian": "latest",
+		"typescript": "^5.0.0"
+	},
+	"scripts": {
+		"dev": "node esbuild.config.mjs",
+		"build": "tsc -noEmit -skipLibCheck && node esbuild.config.mjs production",
+		"version": "node version-bump.mjs && git add manifest.json versions.json",
+		"lint": "eslint ."
+	}
+}
