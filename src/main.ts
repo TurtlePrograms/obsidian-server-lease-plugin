@@ -61,6 +61,29 @@ class LeaseManager {
     console.warn("[lease-plugin]", message, ...args);
   }
 
+  async checkSyncThing(): Promise<void> {
+    try {
+      const response = await requestUrl({
+        url: `http://localhost:8384/rest/noauth/health`,
+        method: "GET",
+        throw: false,
+      });
+      if (response.status !== 200) {
+        throw new Error(`Syncthing health check failed: ${response.status}`);
+      }
+      if (response.json?.status !== "OK") {
+        throw new Error(
+          `Syncthing health check failed: ${response.json?.status}`,
+        );
+      }
+    } catch (error) {
+      this.log("failed to check syncthing status", error);
+      new Notice(
+        "Syncthing health check failed. Please ensure Syncthing is running.",
+      );
+    }
+  }
+
   async start(): Promise<void> {
     this.log("starting lease manager");
 
@@ -87,6 +110,9 @@ class LeaseManager {
     this.log("stopping lease manager");
 
     this.isActive = false;
+    this.checkSyncThing().catch((error) => {
+      this.log("failed to check syncthing status", error);
+    });
 
     for (const state of this.states.values()) {
       if (state.status === "active" && state.leaseId) {
