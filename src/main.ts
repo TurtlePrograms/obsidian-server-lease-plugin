@@ -275,7 +275,12 @@ class LeaseSettingTab extends PluginSettingTab {
       .addText((text) =>
         text
           .setPlaceholder("Automatically detected, only override if necessary")
-          .setValue(this.plugin.settings.syncthingFolderId),
+          .setValue(this.plugin.settings.syncthingFolderId)
+          .onChange(async (value) => {
+            this.plugin.settings.syncthingFolderId = value.trim();
+            await this.plugin.saveSettings();
+            await this.plugin.restartSyncthingManager();
+          }),
       );
 
     new Setting(containerEl)

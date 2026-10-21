@@ -134,7 +134,10 @@ export class SyncthingManager {
 
   async getStatus(): Promise<SyncthingStatus | null> {
     try {
-      const status = await this.syncthingAPIClient.getStatus();
+      const status = await this.syncthingAPIClient?.getStatus();
+      if (!status) {
+        throw new Error("Failed to retrieve Syncthing status");
+      }
       this.lastStatus = status;
       return status;
     } catch (error) {
@@ -145,6 +148,6 @@ export class SyncthingManager {
 
   stop(): void {
     this.isRunning = false;
-    this.syncthingAPIClient.stopMonitoring();
+    this.syncthingAPIClient?.stopMonitoring();
   }
 }
