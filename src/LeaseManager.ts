@@ -92,6 +92,7 @@ export class LeaseManager {
       this.log("lease failed", serviceId, error);
       this.setFailedState(serviceId);
       this.scheduleRetry(serviceId);
+      new Notice(`Lease failed: ${serviceId}. Retrying...`);
     } finally {
       this.ensureLeaseInProgress.delete(serviceId);
     }
@@ -129,7 +130,10 @@ export class LeaseManager {
     }
   }
 
-  private setActiveState(serviceId: string, response: StartLeaseResponse): void {
+  private setActiveState(
+    serviceId: string,
+    response: StartLeaseResponse,
+  ): void {
     this.log("lease active", serviceId, "expires", response.lease.expiry);
     this.states.set(serviceId, {
       serviceId,
@@ -159,11 +163,20 @@ export class LeaseManager {
     this.clearRenewal(serviceId);
     const nowSeconds = Date.now() / 1000;
     const renewInMs = Math.max(
-      (expiryTimestamp - nowSeconds - this.plugin.settings.renewalBufferSeconds) * 1000,
+      (expiryTimestamp -
+        nowSeconds -
+        this.plugin.settings.renewalBufferSeconds) *
+        1000,
       0,
     );
 
-    this.log("scheduling renewal", serviceId, "in", Math.round(renewInMs / 1000), "seconds");
+    this.log(
+      "scheduling renewal",
+      serviceId,
+      "in",
+      Math.round(renewInMs / 1000),
+      "seconds",
+    );
     const timer = window.setTimeout(() => {
       this.renewalTimers.delete(serviceId);
       void this.ensureLease(serviceId);
@@ -174,7 +187,10 @@ export class LeaseManager {
   private scheduleRetry(serviceId: string): void {
     this.clearRetry(serviceId);
     const retryCount = this.states.get(serviceId)?.retryCount ?? 1;
-    const delaySeconds = Math.min(2 ** retryCount, this.plugin.settings.maxRetryDelaySeconds);
+    const delaySeconds = Math.min(
+      2 ** retryCount,
+      this.plugin.settings.maxRetryDelaySeconds,
+    );
 
     this.log("scheduling retry", serviceId, "in", delaySeconds, "seconds");
     const timer = window.setTimeout(() => {

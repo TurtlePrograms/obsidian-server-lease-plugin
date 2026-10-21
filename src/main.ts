@@ -45,7 +45,7 @@ export default class LeasePlugin extends Plugin {
       id: "check-syncthing",
       name: "Check Syncthing now",
       callback: async () => {
-        await this.syncthingManager.checkNow();
+        await this.syncthingManager.getStatus();
       },
     });
 
@@ -240,6 +240,42 @@ class LeaseSettingTab extends PluginSettingTab {
             await this.plugin.saveSettings();
             await this.plugin.restartSyncthingManager();
           }),
+      );
+
+    new Setting(containerEl)
+      .setName("Syncthing API Key")
+      .setDesc("Syncthing API key for accessing the REST API")
+      .addText((text) =>
+        text
+          .setPlaceholder("Your Syncthing API Key")
+          .setValue(this.plugin.settings.syncthingApiKey)
+          .onChange(async (value) => {
+            this.plugin.settings.syncthingApiKey = value.trim();
+            await this.plugin.saveSettings();
+            await this.plugin.restartSyncthingManager();
+          }),
+      );
+
+    new Setting(containerEl)
+      .setName("Syncthing Server Device ID")
+      .setDesc("The ID of the Syncthing server to monitor")
+      .addText((text) =>
+        text
+          .setPlaceholder("Server Syncthing Device ID")
+          .setValue(this.plugin.settings.syncthingDeviceId)
+          .onChange(async (value) => {
+            this.plugin.settings.syncthingDeviceId = value.trim();
+            await this.plugin.saveSettings();
+            await this.plugin.restartSyncthingManager();
+          }),
+      );
+    new Setting(containerEl)
+      .setName("Syncthing Folder ID")
+      .setDesc("The ID of the Syncthing folder to monitor")
+      .addText((text) =>
+        text
+          .setPlaceholder("Automatically detected, only override if necessary")
+          .setValue(this.plugin.settings.syncthingFolderId),
       );
 
     new Setting(containerEl)

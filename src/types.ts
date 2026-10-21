@@ -7,6 +7,9 @@ export interface LeasePluginSettings {
   syncthingUrl: string;
   syncthingCheckIntervalSeconds: number;
   syncthingRetryIntervalSeconds: number;
+  syncthingFolderId: string;
+  syncthingDeviceId: string;
+  syncthingApiKey: string;
 }
 
 export const DEFAULT_SETTINGS: LeasePluginSettings = {
@@ -18,6 +21,9 @@ export const DEFAULT_SETTINGS: LeasePluginSettings = {
   syncthingUrl: "http://localhost:8384",
   syncthingCheckIntervalSeconds: 60,
   syncthingRetryIntervalSeconds: 10,
+  syncthingFolderId: "",
+  syncthingDeviceId: "",
+  syncthingApiKey: "",
 };
 
 export interface StartLeaseResponse {
